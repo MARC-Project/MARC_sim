@@ -1,4 +1,3 @@
-ackermann_vehicle
-=================
-
-ROS packages for simulating a vehicle with Ackermann steering
+MARC sim
+=========
+This package is for ROS simulation on Gazebo.

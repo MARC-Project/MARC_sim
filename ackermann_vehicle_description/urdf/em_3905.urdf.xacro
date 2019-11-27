@@ -2,6 +2,9 @@
 
 <!-- em_3905.urdf.xacro
 
+This file is modified to be used in MARC project.
+================  Original License Here=====================
+
 This file defines a model of a Traxxas(R) E-Maxx(R) #3905 RC (Radio Controlled)
 truck.
 
@@ -43,44 +46,44 @@ limitations under the License.
 
   <!-- chassis_length is measured along the x axis, chassis_width
        along the y axis, and chassis_height along the z axis. -->
-  <xacro:property name="chassis_length" value="0.258"/>
-  <xacro:property name="chassis_width" value="0.168"/>
+  <xacro:property name="chassis_length" value="0.218"/>
+  <xacro:property name="chassis_width" value="0.118"/>
   <xacro:property name="chassis_height" value="0.01"/>
-  <xacro:property name="chassis_mass" value="2.788"/>
+  <xacro:property name="chassis_mass" value="0.788"/>
 
   <!-- battery_dist is the distance between the inner edges of the
        batteries. battery_comp_depth is the battery compartment depth.
        battery_length is measured along the x axis, battery_width
        along the y axis, and battery_height along the z axis. -->
-  <xacro:property name="battery_x_offset" value="0.055"/>
-  <xacro:property name="battery_dist" value="0.065"/>
-  <xacro:property name="battery_comp_depth" value="0.02"/>
-  <xacro:property name="battery_comp_angle" value="0.34906585"/>
-  <xacro:property name="battery_length" value="0.16"/>
-  <xacro:property name="battery_width" value="0.047"/>
-  <xacro:property name="battery_height" value="0.024"/>
-  <xacro:property name="battery_mass" value="0.5025"/>
+  <xacro:property name="battery_x_offset" value="0.005"/>
+  <xacro:property name="battery_dist" value="0.0"/>
+  <xacro:property name="battery_comp_depth" value="0.0"/>
+  <xacro:property name="battery_comp_angle" value="0.0"/>
+  <xacro:property name="battery_length" value="0.06"/>
+  <xacro:property name="battery_width" value="0.110"/>
+  <xacro:property name="battery_height" value="0.04"/>
+  <xacro:property name="battery_mass" value="0.0025"/>
 
   <!-- hub_dia and tire_dia are the diameters of the hub and tire,
        respectively. hex_hub_depth is the distance that the hex hub is
        inset from the outer edge of the tire. It is set so that each wheel
        is a "zero offset" wheel. hex_hub_depth = tire_width / 2 -
        axle_length. -->
-  <xacro:property name="hub_dia" value="0.09652"/>
-  <xacro:property name="tire_dia" value="0.14605"/>
-  <xacro:property name="tire_width" value="0.0889"/>
+  <xacro:property name="hub_dia" value="0.05652"/>
+  <xacro:property name="tire_dia" value="0.06605"/>
+  <xacro:property name="tire_width" value="0.03"/>
   <xacro:property name="hex_hub_depth" value="0.01445"/>
-  <xacro:property name="wheel_mass" value="0.29"/>
+  <xacro:property name="wheel_mass" value="0.729"/>
 
   <!-- hex_hub_dist is the distance between left and right hex hubs when
        the shock absorbers are fully extended. axle_length is the distance
        from a U joint to the corresponding hex hub. wheel_travel is the
        vertical wheel travel. -->
-  <xacro:property name="wheelbase" value="0.335"/>
-  <xacro:property name="hex_hub_dist" value="0.365"/>
-  <xacro:property name="axle_length" value="0.03"/>
-  <xacro:property name="wheel_travel" value="0.084"/>
-  <xacro:property name="shock_z_offset" value="0.0655"/>
+  <xacro:property name="wheelbase" value="0.145"/>
+  <xacro:property name="hex_hub_dist" value="0.155"/>
+  <xacro:property name="axle_length" value="0.0"/>
+  <xacro:property name="wheel_travel" value="0.000"/>
+  <xacro:property name="shock_z_offset" value="0.01"/>
 
   <!-- shock_eff_limit is 2 * ((shock_stroke / 2) * shock_spring_constant) N.
        shock_stroke is 0.028575 meters. shock_spring_constant, an approximation
@@ -112,11 +115,16 @@ limitations under the License.
   <xacro:property name="servo_stall_torque" value="0.5649"/>
   <xacro:property name="servo_no_load_speed" value="4.553"/>
 
+  <!-- Property of IMU and camera -->
+  <xacro:property name="imu_size" value="0.01"/>
+  <xacro:property name="imu_height" value="0.01"/>
+
+
   <material name="battery_mat">
     <color rgba="0 0 1 1"/>
   </material>
   <material name="chassis_mat">
-    <color rgba="0.5 0.5 0.5 1"/>
+    <color rgba="1 0 0.1 1"/>
   </material>
   <material name="tire_mat">
     <color rgba="0 0 0 1"/>
@@ -164,15 +172,44 @@ limitations under the License.
     </inertial>
   </xacro:macro>
 
+<!-- IMU -->
+  <xacro:macro name="imu">  
+    <joint name="chassis_to_imu" type="fixed">
+      <parent link="chassis"/>
+      <child link="imu_link"/>
+      <origin xyz="0
+                   0
+                   ${chassis_height / 2}"
+              rpy="0 0 0"/>
+    </joint>
+
+    <link name="imu_link">	  
+			<visual>
+        <origin xyz="${-imu_size / 2} ${-imu_size / 2} ${-imu_height / 2}"/>
+				<geometry>
+				<box size="0.01 0.01 0.01"/>
+				</geometry>
+				<material name="yellow"/>
+			</visual>
+
+			<collision>
+				<origin xyz="${-imu_size / 2} ${-imu_size / 2} ${imu_height / 2}"/>
+				<geometry>
+				<box size="0 0 0"/>
+				</geometry>
+			</collision>
+    </link>
+  </xacro:macro>
+
   <!-- Battery -->
   <xacro:macro name="battery" params="prefix reflect">
     <joint name="chassis_to_${prefix}_battery" type="fixed">
       <parent link="chassis"/>
       <child link="${prefix}_battery_offset"/>
-      <origin xyz="${battery_x_offset - battery_length / 2}
-                   ${reflect * battery_dist / 2}
+      <origin xyz="${-battery_length }
+                   ${-battery_width / 2}
                    0"
-              rpy="${reflect * battery_comp_angle} 0 0"/>
+              rpy="${battery_comp_angle} 0 0"/>
     </joint>
 
     <link name="${prefix}_battery_offset">
@@ -183,7 +220,7 @@ limitations under the License.
       <parent link="${prefix}_battery_offset"/>
       <child link="${prefix}_battery"/>
       <origin xyz="0
-                   ${reflect * battery_width / 2}
+                   ${ battery_width / 2}
                    ${(battery_height / 2) - battery_comp_depth}"/>
     </joint>
 
@@ -230,12 +267,12 @@ limitations under the License.
     <transmission name="${lr_prefix}_${fr_prefix}_shock_trans">
       <type>transmission_interface/SimpleTransmission</type>
       <joint name="${lr_prefix}_${fr_prefix}_shock">
-        <hardwareInterface>EffortJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
       </joint>
       <actuator name="${lr_prefix}_${fr_prefix}_shock_act">
         <!-- This hardwareInterface element exists for compatibility
              with ROS Hydro. -->
-        <hardwareInterface>EffortJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
     </transmission>
@@ -259,12 +296,12 @@ limitations under the License.
     <transmission name="${lr_prefix}_${fr_prefix}_axle_trans">
       <type>transmission_interface/SimpleTransmission</type>
       <joint name="${lr_prefix}_${fr_prefix}_axle">
-        <hardwareInterface>EffortJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
       </joint>
       <actuator name="${lr_prefix}_${fr_prefix}_axle_act">
         <!-- This hardwareInterface element exists for compatibility
              with ROS Hydro. -->
-        <hardwareInterface>EffortJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
     </transmission>
@@ -322,12 +359,12 @@ limitations under the License.
     <transmission name="${lr_prefix}_steering_trans">
       <type>transmission_interface/SimpleTransmission</type>
       <joint name="${lr_prefix}_steering_joint">
-        <hardwareInterface>EffortJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
       </joint>
       <actuator name="${lr_prefix}_steering_act">
         <!-- This hardwareInterface element exists for compatibility
              with ROS Hydro. -->
-        <hardwareInterface>EffortJointInterface</hardwareInterface>
+        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
     </transmission>
@@ -346,9 +383,32 @@ limitations under the License.
                  lr_reflect="${lr_reflect}"/>
   </xacro:macro>
 
+<!-- root link, on the ground just below the model origin >
+  <link name="base_footprint">
+   <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.001 0.001 0.001" />
+      </geometry>
+    </visual>
+  </link>
+
+  <joint name="base_link_joint" type="fixed">
+    <origin xyz="0.0 0 1.25" rpy="0 0 0" />
+    <parent link="base_footprint"/>
+    <child link="base_link" />
+  </joint-->
+
   <!-- base_link must have geometry so that its axes can be displayed in
        rviz. -->
   <link name="base_link">
+    <inertial>
+      <mass value="50" />
+      <origin xyz="0 0 -1.25" />
+      <inertia ixx="50.0" ixy="0.0" ixz="0.0"
+        iyy="50.0" iyz="0.0"
+        izz="50.0" />
+    </inertial>
     <visual>
       <geometry>
         <box size="0.01 0.01 0.01"/>
@@ -384,7 +444,7 @@ limitations under the License.
     </xacro:solid_cuboid_inertial>
   </link>
   <gazebo reference="chassis">
-    <material>Gazebo/Grey</material>
+    <material>Gazebo/WoodFloor</material>
   </gazebo>
 
   <joint name="base_link_to_chassis" type="fixed">
@@ -392,9 +452,50 @@ limitations under the License.
     <child link="chassis"/>
   </joint>
 
-  <!-- Batteries -->
-  <xacro:battery prefix="left" reflect="1"/>
-  <xacro:battery prefix="right" reflect="-1"/>
+  <!-- Batteries, IMU -->
+  <xacro:battery prefix="left" reflect="0"/>
+  <xacro:imu />
+
+  <!-- Camera -->
+  <joint name="chassis_to_camera" type="fixed">
+    <parent link="chassis"/>
+    <child link="camera_link"/>
+    <origin xyz="${(chassis_length / 4)}
+                 0
+                 ${chassis_height}"
+            rpy="0 0 0"/>
+  </joint>
+  <link name="camera_link">
+    <collision>
+      <origin xyz="${(chassis_length / 4)-0.005}
+									 0
+									 ${-chassis_height / 4 +0.06}" 
+							rpy="0 0 0"/>
+      <geometry>
+    <box size="0.01 0.01 0.01"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="${(chassis_length / 4) -0.005}
+									 0
+									 ${-chassis_height / 4 +0.06}" 
+							rpy="0 0 0"/>
+      <geometry>
+    <box size="0.01 0.01 0.01"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+  <gazebo reference="camera_link">
+    <material>Gazebo/Red</material>
+  </gazebo>
 
   <!-- Wheels -->
   <xacro:front_wheel lr_prefix="left" fr_prefix="front"
@@ -407,6 +508,72 @@ limitations under the License.
                     lr_reflect="-1" fr_reflect="-1"/>
 
   <gazebo>
-    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so"/>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+	<legacyModeNS>true</legacyModeNS>
+    </plugin>
   </gazebo>
+
+  <!-- IMU plugin -->
+  <gazebo reference="imu_link">
+        <gravity>true</gravity>
+        <sensor name="imu_sensor" type="imu">
+            <always_on>true</always_on>
+            <update_rate>100</update_rate>
+            <visualize>true</visualize>
+            <topic>__default_topic__</topic>
+            <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+                <topicName>imu</topicName>
+                <bodyName>imu_link</bodyName>
+                <updateRateHZ>100.0</updateRateHZ>
+                <gaussianNoise>0.0</gaussianNoise>
+                <xyzOffset>0 0 0</xyzOffset>
+                <rpyOffset>0 0 0</rpyOffset>
+                <frameName>imu_link</frameName>
+            </plugin>
+            <pose>0 0 0 0 0 0</pose>
+        </sensor>
+    </gazebo>
+
+  <!-- camera Plugin -->
+  <gazebo reference="camera_link">
+    <sensor type="camera" name="camera1">
+      <update_rate>10.0</update_rate>
+      <camera name="head">
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <!-- Noise is sampled independently per pixel on each frame.
+               That pixel's noise value is added to each of its color
+               channels, which at that point lie in the range [0,1]. -->
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>smartcar/camera1</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>camera_link</frameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.069086</distortionK1>
+        <distortionK2>-0.089009</distortionK2>
+        <distortionK3>0.007247</distortionK3>
+        <distortionT1>0.009025</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+
 </robot>
