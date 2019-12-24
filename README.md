@@ -1,9 +1,12 @@
 MARC sim
 =========
-This package is for ROS simulation on Gazebo.
+The marc_test package is for ROS simulation on Gazebo.  
 
-This package uses a meta-package structure.   
-**ackermann_vehicle_description** contains the urdf model file.  
-**ackermann_vehicle_gazebo** is the major package. Launch the file _ackermann_vehicle.launch_ to start Gazebo simulation. The _config_ folder contains parameter files of Gazebo ros_control plugins.  
+**urdf** file clip contains the urdf model file. Currently the package is using `smartcar.urdf.xacro`. `test.urdf.xacro` is an ackermann model on test.  
+**config** file clip contains yaml files which stores parameters of ros controller.   
+**launch** file clip contains launch files.  
+
+  
+To launch the simulation, use `roslaunch marc_test diff_smartcar.launch`.  
 
 
