@@ -13,6 +13,7 @@ The marc_test package is for ROS simulation on Gazebo.
 **urdf** file clip contains the urdf model file. Currently the package is using `smartcar.urdf.xacro`. `test.urdf.xacro` is an ackermann model on test.  
 **config** file clip contains yaml files which stores parameters of ros controller.   
 **launch** file clip contains launch files.  
+**model** file clip contains other models needed, for example, the model of QR code "door". You can add any model in Gazebo world, depend on your private demands.    
 
 ## How to use  
 To launch the simulation, use `roslaunch marc_test diff_smartcar.launch`.  
